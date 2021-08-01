@@ -1,0 +1,11 @@
+{
+  "name": "discord-display",
+  "version": "0.1.0",
+  "description": "A web based content display controlled via discord",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/j7126/discord-display"
+  },
+  "author": "Jefferey Neuffer (https://github.com/j7126/)",
+  "license": "AGPL-3.0-or-later"
+}
