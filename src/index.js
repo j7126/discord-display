@@ -15,3 +15,14 @@ Copyright (C) 2021  Jefferey Neuffer (https://github.com/j7126/)
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+
+import 'material-icons/iconfont/material-icons.css';
+
+import Vue from 'vue';
+
+import './mdc-vue-wrapper.js'
+
+var app = new Vue({
+    el: '#app',
+    data: {}
+});
