@@ -2,9 +2,9 @@ const path = require('path');
 const autoprefixer = require('autoprefixer');
 
 module.exports = {
-    mode: 'development',
+    mode: 'production',
     entry: {
-        index: './src/index.js',
+        app: './src/app.js',
         style: './src/app.scss',
         mdcVueWrapper: './src/mdc-vue-wrapper.js',
     },

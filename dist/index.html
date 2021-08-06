@@ -6,19 +6,34 @@
     <title>
         Discord Display
     </title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
     <link rel="stylesheet" href="bundle.css">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script defer src="index.bundle.js"></script>
+    <script defer src="app.bundle.js"></script>
 </head>
 
-<body>
+<body class="mdc-typography">
     <div id="app">
-        <mdc-top-app-bar title="Editing layout">
-            <template slot="end">
-                <mdc-icon-button icon="settings" @click="message = 'test'"></mdc-icon-button>
-            </template>
-        </mdc-top-app-bar>
-        <br><br><br><br>
+        <div id="authContainer" v-if="!active">
+            <div class="expand"></div>
+            <mdc-h1>Discord Display</mdc-h1>
+            <mdc-h4>Enter your activation code to get started</mdc-h4>
+            <div>
+                <mdc-text-field label="Activation Code" v-model="activationCode" maxlength="6" outlined="true"
+                    @keyup="activationCodeKeyup" :error="activationCodeError">
+                </mdc-text-field>
+                <div class="goButtonContainer">
+                    <mdc-fab icon="arrow_forward" @click="sendActivationCode"></mdc-fab>
+                </div>
+            </div>
+            <div class="expand"></div>
+            <mdc-subtitle2>To get an activation code, mention the bot on discord with the "<code>start</code>"
+                command</mdc-subtitle2>
+        </div>
+        <div id="content" v-if="active" :style="contentStyle"></div>
+        <div id="caption" v-if="active">
+            <mdc-h4>{{caption}}</mdc-h4>
+        </div>
     </div>
 </body>
 

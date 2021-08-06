@@ -175,31 +175,57 @@ Vue.component('mdc-checkbox', {
 
 Vue.component('mdc-text-field', {
     data: function () {
-        return {}
+        return {
+            textField: null,
+            valid: true,
+        }
     },
-    props: ['value', 'label', 'disabled', 'required', 'maxlength', 'type', 'min', 'max', 'outlined'],
+    props: ['value', 'label', 'disabled', 'required', 'maxlength', 'type', 'min', 'max', 'outlined', 'helper', 'error'],
+    watch: {
+        error: function (val) {
+            if (val != null) {
+                this.textField.valid = false;
+                this.valid = false;
+            } else {
+                this.textField.valid = true;
+                this.valid = true;
+            }
+        },
+    },
     mounted: function () {
         if (window.mdc != null)
             MDCTextField = window.mdc.textField.MDCTextField;
-        const switchControl = new MDCTextField(this.$el);
+        this.textField = new MDCTextField(this.$el.firstChild);
+        if (this.error != null) {
+            this.textField.valid = false;
+            this.valid = false;
+        }
     },
     template: `
-<label :id="'mdc-text-field-l_' + _uid" class="mdc-text-field"
-    :class="{'mdc-text-field--filled': !outlined, 'mdc-text-field--outlined': outlined}">
-    <span v-if="!outlined" class="mdc-text-field__ripple"></span>
-    <span v-if="outlined" class="mdc-notched-outline">
-        <span class="mdc-notched-outline__leading"></span>
-        <span class="mdc-notched-outline__notch">
-            <span class="mdc-floating-label" :id="'mdc-text-field_' + _uid">{{label}}</span>
+<div style="display: inline-block; vertical-align: top;">
+    <label :id="'mdc-text-field-l_' + _uid" class="mdc-text-field"
+        :class="{'mdc-text-field--filled': !outlined, 'mdc-text-field--outlined': outlined}">
+        <span v-if="!outlined" class="mdc-text-field__ripple"></span>
+        <span v-if="outlined" class="mdc-notched-outline">
+            <span class="mdc-notched-outline__leading"></span>
+            <span class="mdc-notched-outline__notch">
+                <span class="mdc-floating-label" :id="'mdc-text-field_' + _uid">{{label}}</span>
+            </span>
+            <span class="mdc-notched-outline__trailing"></span>
         </span>
-        <span class="mdc-notched-outline__trailing"></span>
-    </span>
-    <span v-if="!outlined" class="mdc-floating-label" :id="'mdc-text-field_' + _uid">{{label}}</span>
-    <input class="mdc-text-field__input" :type="type != null ? type : 'text'"
-        :aria-labelledby="'mdc-text-field_' + _uid" @input="$emit('input', $event.target.value)" :required="required"
-        :disabled="disabled" :maxlength="maxlength" :value="value" :min="min" :max="max">
-    <span v-if="!outlined" class="mdc-line-ripple"></span>
-</label>
+        <span v-if="!outlined" class="mdc-floating-label" :id="'mdc-text-field_' + _uid">{{label}}</span>
+        <input class="mdc-text-field__input" :type="type != null ? type : 'text'"
+            :aria-labelledby="'mdc-text-field_' + _uid" :aria-controls="helper != null ? 'mdc-text-field-helper_' + _uid : ''"
+            :aria-describedby="helper != null ? 'mdc-text-field-helper_' + _uid : ''" @keyup="$emit('keyup', $event)"
+            @input="$emit('input', $event.target.value)" :required="required" :disabled="disabled"
+            :maxlength="maxlength" :value="value" :min="min" :max="max" @focusout="valid = true">
+        <span v-if="!outlined" class="mdc-line-ripple"></span>
+    </label>
+    <div class="mdc-text-field-helper-line" v-if="helper != null || !valid">
+        <div class="mdc-text-field-helper-text" :id="'mdc-text-field-helper_' + _uid" aria-hidden="true"
+            :style="!valid ? { color: 'var(--mdc-theme-error)' } : null" :class="{ 'mdc-text-field-helper-text--persistent': !valid }">{{valid ? helper : error}}</div>
+    </div>
+</div>
 `
 });
 
