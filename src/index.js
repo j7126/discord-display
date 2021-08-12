@@ -75,15 +75,19 @@ discordClient.on('message', message => {
 
         // Start Command
         if (commandName == 'start') {
+            var quiet = false
+            if (args[0] == "quiet")
+                quiet = true
+
             if (clients.has(id)) {
                 if (clients.get(id).socket == null)
-                    message.reply("Looks like you already have a session running.\nPlease activate your session.")
+                    (quiet ? message.author.send : message.reply)("Looks like you already have a session running.\nPlease activate your session.")
                 else
-                    message.reply("Looks like you already have a session running.\nTo move your session to this channel, use the `move` command")
+                    (quiet ? message.author.send : message.reply)(`Looks like you already have a session running.\nTo move your session to ${quiet ? 'another' : 'this'} channel, use the \`move\` command`)
                 return;
             }
             if (message.channel.type != 'dm' && message.channel.type != 'text') {
-                message.reply(`Sorry, this channel type (\`${message.channel.type}\`) is not currently supported`)
+                (quiet ? message.author.send : message.reply)(`Sorry, ${quiet ? 'the' : 'this'} channel type (\`${message.channel.type}\`) is not currently supported`)
             }
 
             var activationCode = null
@@ -100,14 +104,14 @@ discordClient.on('message', message => {
 
             message.author.send(`\u200b\nYour activation code is \`${activationCode}\`, it will be valid for 30 seconds\nPlease enter it on the web app to get started`)
                 .then(msg => {
-                    if (message.channel.type !== 'dm')
+                    if (message.channel.type !== 'dm' && !quiet)
                         message.reply("Alright, let's get started!\nI have sent you a direct message to get set up.")
                     clients.set(id, {
                         id: id,
                         user: message.author,
                         socket: null,
                         channel: message.channel,
-                        quiet: false,
+                        quiet: quiet,
                         anyUsers: false,
                         allowedUsers: [],
                         messageType: 'all',
@@ -115,7 +119,7 @@ discordClient.on('message', message => {
                         settingsMessage: null,
                         timeout: null,
                         sessionEnd: function () {
-                            if (message.channel.type !== 'dm')
+                            if (message.channel.type !== 'dm' && !this.quiet)
                                 this.channel.send(`<@${this.user.id}>'s session in this channel has ended`)
                             if (message.channel.type === 'dm')
                                 var channelString = `here`
@@ -131,7 +135,7 @@ discordClient.on('message', message => {
                         sessionStart: function () {
                             var self = this
                             clearTimeout(this.timeout)
-                            if (message.channel.type !== 'dm')
+                            if (message.channel.type !== 'dm' && !this.quiet)
                                 this.channel.send(`<@${this.user.id}> has started a session in this channel`)
                             if (message.channel.type === 'dm')
                                 var channelString = `here`
@@ -163,7 +167,8 @@ This session will end if you close the web app, or if you loose connection`)
                             return buttonRow
                         },
                         handleMessage: function (m) {
-                            this.socket.send({ content: m.content, embeds: m.embeds, attachments: m.attachments })
+                            if (m.author.id == this.id || this.anyUsers)
+                                this.socket.send({ content: m.content, embeds: m.embeds, attachments: m.attachments })
                         }
                     })
                     clients.get(id).timeout = setTimeout(() => {
@@ -179,6 +184,9 @@ This session will end if you close the web app, or if you loose connection`)
                     activationCodes.delete(activationCode)
                 })
 
+            if (quiet)
+                message.delete()
+
             return
         }
 
@@ -189,6 +197,23 @@ This session will end if you close the web app, or if you loose connection`)
                 client.socket.disconnect(true)
             } else {
                 message.reply("You don't have any running sessions")
+            }
+            return
+        }
+
+        // Quiet command
+        if (commandName == 'quiet') {
+            if (clients.has(id)) {
+                var client = clients.get(id)
+                client.quiet = !client.quiet
+                message.author.send(`Quiet mode for your current session was ${client.quiet ? 'enabled' : 'disabled'}`)
+                if (client.quiet)
+                    message.delete()
+                if (client.socket != null)
+                    client.settingsMessage.edit("Session settings:", client.getSettingsButtonRow())
+            } else {
+                message.author.send("You don't have any running sessions")
+                message.delete()
             }
             return
         }
