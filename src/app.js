@@ -20,7 +20,7 @@ import 'material-icons/iconfont/material-icons.css';
 
 import Vue from 'vue';
 
-import './mdc-vue-wrapper.js'
+import 'mdc-vue-wrapper'
 
 import io from 'socket.io-client'
 
@@ -76,6 +76,9 @@ app = new Vue({
             if (e.keyCode == 13) {
                 this.sendActivationCode()
             }
+        },
+        goFs: function () {
+            document.documentElement.requestFullscreen()
         }
     },
     computed: {

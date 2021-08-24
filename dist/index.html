@@ -12,9 +12,12 @@
     <script defer src="app.bundle.js"></script>
 </head>
 
-<body class="mdc-typography">
+<body class="mdc-typography" style="background-color: white;">
     <div id="app">
         <div id="authContainer" v-if="!active">
+            <div class="fsButtonContainer">
+                <mdc-icon-button icon="fullscreen" @click="goFs"></mdc-icon-button>
+            </div>
             <div class="expand"></div>
             <mdc-h1>Discord Display</mdc-h1>
             <mdc-h4>Enter your activation code to get started</mdc-h4>

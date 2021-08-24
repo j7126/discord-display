@@ -6,7 +6,6 @@ module.exports = {
     entry: {
         app: './src/app.js',
         style: './src/app.scss',
-        mdcVueWrapper: './src/mdc-vue-wrapper.js',
     },
     devtool: 'inline-source-map',
     devServer: {

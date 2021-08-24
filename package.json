@@ -43,6 +43,7 @@
     "material-icons": "^1.0.1",
     "socket.io": "^4.1.3",
     "socket.io-client": "^4.1.3",
-    "vue": "^2.6.14"
+    "vue": "^2.6.14",
+    "mdc-vue-wrapper": "git+https://github.com/j7126/mdc-vue-wrapper.git"
   }
 }
